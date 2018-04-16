@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <text>Test template</text>
+    {% if test_list %}
+        {% for foo in test_list %}
+            <li>
+                <a href="{% url 'authenticate:test' foo %}">test {{ foo }}</a>
+            </li>
+        {% endfor %}
+    {% else %}
+        <p>test_list is empty</p>
+    {% endif %}
+</body>
+</html>

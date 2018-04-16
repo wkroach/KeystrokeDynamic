@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+</head>
+<body>
+    {% csrf_token %}
+    <strong>
+        username:
+    </strong>
+    <br>
+        {{ user.username }}
+    <br>
+    <strong>
+        password:
+    </strong>
+    <br>
+        {{ user.password }}
+    <br>
+</body>
+</html>

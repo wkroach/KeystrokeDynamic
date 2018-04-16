@@ -1,0 +1,108 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="{% static "javascript/jquery-3.3.1.js" %}"></script>
+    <title>train</title>
+    <script>
+         var mp = {};
+         var count = {{ count }};
+        $.ajaxSetup({
+             data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        $(document).ready(function(){
+        $("#password").keydown(function(event){
+           // document.getElementById("demo").innerHTML=event.which;
+            if(!filterWhiteKey(event)){
+                return true;
+            }
+	        var key = String(event.which);
+	        var time = new Date().getTime();
+	        console.log(mp);
+	        if(mp[key] == null){
+		        mp[key] = new Array();
+		        mp[key].push({"key":key, "time":time, "type":"d"})
+	        }else{
+		        if(mp[key][mp[key].length-1].type !== "d"){
+			    mp[key].push({"key":key, "time":time, "type":"d"})
+		        }
+	        }
+        });
+        $("#password").keyup(function(event){
+            //document.getElementById("demo2").innerHTML=event.which;
+            if(!filterWhiteKey(event)){
+                return true;
+            }
+	        var key = String(event.which);
+	        var time = new Date().getTime();
+	        if(mp[key] == null){
+		        mp[key] = new Array();
+	        }
+	        mp[key].push({"key":key, "time":time, "type":"u"})
+        });
+	    $("#submit").click(function(){
+	        //document.getElementById("out").innerHTML= mp.toString();
+            console.log("submit");
+            $.ajax({
+                async:false,
+                type: "post",
+                url: "{% url "authenticate:train_keystroke"%}",
+                dataType: "json",
+                data: JSON.stringify({
+                    username: "{{ user.username }}",
+                    password: document.getElementById("password").value,
+                    mp: mp
+                }),
+                success: function (data) {
+                   console.log(data);
+                   if(data.retry_message){
+                       alert(data.retry_message);
+                       mp = {};
+                       $("#password").val("");
+                       return false;
+                   }else if(data.error_message){
+                       alert(data.error_message);
+                       return false;
+                   } else{
+                       $("#comment").html("<strong>please input your password " + --count + " times</strong>");
+                       mp = {};
+                       $("#password").val("");
+                       return false;
+                   }
+                }
+            });
+            if(count === 0){
+                return true;
+            }
+            return false;
+        });
+	    $("#clear").click(function () {
+            mp = {};
+            $("#password").val("");
+            return false;
+        });
+    });
+
+    function filterWhiteKey(event) {
+        var whiteKeySet = new Set([8])
+        if(whiteKeySet.has(event.which)){
+            console.log("filter " + event.which)
+            return false;
+        }
+        return true;
+    }
+
+    </script>
+</head>
+<body>
+<p id="comment"><strong>please input your password {{ count }} times</strong></p>
+    <form method="post">
+        {% csrf_token %}
+        password:<input type="password" name="password" id="password" onkeydown="if(event.which === 13) return false"><br>
+        <input type="submit" value="submit keystroke" id="submit" formaction="{% url 'authenticate:login'%}" formmethod="post"/>
+        <button type="button" id="clear">clear password</button>
+        <!--<button type="button" id="test">ok</button>-->
+    </form>
+</body>
+</html>
