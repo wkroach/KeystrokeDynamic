@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -124,11 +125,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-#HERE = os.path.dirname(os.path.abspath(__file__))
-#HERE = os.path.join(HERE, '../')
-#STATICFILES_DIRS = (
-#    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-#    # Always use forward slashes, even on Windows.
-#    # Don't forget to use absolute paths, not relative paths.
-#    os.path.join(HERE, 'static/'),
-#)
+# HERE = os.path.dirname(os.path.abspath(__file__))
+# HERE = os.path.join(HERE, '../')
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(BASE_DIR, 'static/'),
+)
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/local/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats-local.json'),
+    }
+}

@@ -5,6 +5,7 @@ from .models import User, Keystroke
 
 app_name = 'authenticate'
 urlpatterns = [
+    path('', views.index, name='index'),
     path('test_list/', views.test_list, name='test_list'),
     path('<str:user_name>/test_user/', views.test_user, name='test_user'),
     path('create_account/', views.create_account, name='create_account'),

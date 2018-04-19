@@ -3,17 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/main.css">
 </head>
 <body>
-    <text>Test template</text>
-    {% if test_list %}
-        {% for foo in test_list %}
-            <li>
-                <a href="{% url 'authenticate:test' foo %}">test {{ foo }}</a>
-            </li>
-        {% endfor %}
-    {% else %}
-        <p>test_list is empty</p>
-    {% endif %}
+   <script>
+      var WebFontConfig = {
+        google: { families: [ 'Roboto:400,300,500:latin' ] }
+      };
+      (function() {
+        var wf = document.createElement('script');
+        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+    </script>
+{% load render_bundle from webpack_loader %}
+{% block main %}
+  <dev id="App2"> </dev>
+{% render_bundle 'vendors' %}
+{% render_bundle 'App2' %}
+{% endblock %}
 </body>
 </html>
