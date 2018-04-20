@@ -10,6 +10,10 @@ import json
 from .data_center import *
 
 
+def index(request):
+    return render(request, 'authenticate/index.html')
+
+
 def test_list(request):
     test_list = [i for i in range(10)]
     context = {

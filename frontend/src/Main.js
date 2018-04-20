@@ -74,7 +74,7 @@ class Main extends Component {
               <TextField/><br></br>
             1-2-3-4-5
           </Dialog>
-          <h1>Material-UI awesome!!!</h1>
+          <h1>Material-UI </h1>
             <h2>I love Rice</h2>
             <TextField
                 hintText={"input password"}
