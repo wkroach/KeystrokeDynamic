@@ -13,6 +13,9 @@ import FlatButton from 'material-ui/FlatButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+import {request} from './utils'
+import {UsernameInput} from "./UsernameInput";
+
 const styles = {
   container: {
     textAlign: 'center',
@@ -28,6 +31,16 @@ const muiTheme = getMuiTheme({
       headerColor: blue400,
     }
 });
+
+
+function ajax() {
+   let url = "http://127.0.0.1:8000/authenticate/add_account/";
+   let f = (json)=>{alert("username: " + json["username"] + "\n" + "password: " + json["password"]);};
+   request(url, {}, f, f, f, f);
+    //request2(url, {});
+    //f("debug");
+}
+
 
 class Main extends Component {
   constructor(props, context) {
@@ -52,6 +65,10 @@ class Main extends Component {
       open: true,
     });
   }
+  
+  handleCreateAccount = () => {
+      ajax();
+  }
 
   render() {
     const standardActions = (
@@ -74,17 +91,23 @@ class Main extends Component {
               <TextField/><br></br>
             1-2-3-4-5
           </Dialog>
-          <h1>Material-UI </h1>
-            <h2>I love Rice</h2>
+          <h1>Material-UI</h1>
+            <h2>example project</h2>
+            <UsernameInput/>
             <TextField
                 hintText={"input password"}
-                onKeyUp={this.handleKeyDown}
             /><br></br>
           <RaisedButton
             label="Super Secret Password"
             primary={true}
             onClick={this.handleTouchTap}
-          />
+          /><br></br>
+            <RaisedButton
+                label={"create account"}
+                primary={false}
+                secondary={true}
+                onClick={this.handleCreateAccount}
+            />
         </div>
       </MuiThemeProvider>
     );

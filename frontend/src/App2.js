@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 //import injectTapEventPlugin from 'react-tap-event-plugin';
 import Main from './Main';
+import {UsernameInput} from './UsernameInput'
 
 class App2 extends React.Component {
   render() {
@@ -21,3 +22,4 @@ class App2 extends React.Component {
 //injectTapEventPlugin();
 //ReactDOM.render(<App2/>, document.getElementById('App2'));
 ReactDOM.render(<Main/>, document.getElementById('App2'));
+//ReactDOM.render(<UsernameInput value=""/>, document.getElementById("App2"));

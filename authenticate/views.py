@@ -2,6 +2,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.contrib.auth import authenticate
 from .models import User
 from .data_center import *
 from .algorithm import *
@@ -27,35 +28,42 @@ def test_user(request, user_name):
     return render(request, 'authenticate/user.html', {'user':user})
 
 
-def create_account(request):
-    return render(request, "authenticate/createaccount.html")
+@csrf_exempt
+def test_frontend_login(request):
+    data = json.loads(request.body)
+    return JsonResponse(data)
 
 
+@csrf_exempt
+def test_frontend_add_account(request):
+    data = json.loads(request.body)
+    return JsonResponse(data)
+
+
+@csrf_exempt
 def add_account(request):
+    username = request.POST["username"]
+    password = request.POST["password"]
     try:
-        user = User.objects.get(username=request.POST['username'])
-    except Exception:
-        user = User(username=request.POST['username'], password=request.POST['password'])
-        user.save()
-        # return HttpResponseRedirect(reverse('authenticate:success', args=(user.username,)))
-        return render(request, 'authenticate/train.html', {"user": user, "count": 15})
-    else:
-        return render(request, 'authenticate/login.html', {"error_message": "username existed"})
+        user = User.objects.create_user(username=username, password=password)
+        return render(request, 'authenticate/train.html', {"user": user, "count": settings.HMM_TRAIN_TIMES})
+    except Exception as e:
+        return render(request, 'authenticate/login.html', {"error_message": e})
 
 
 def login(request):
     return render(request, "authenticate/login.html")
 
 
-def authenticate(request):
+def login_authenticate(request):
     try:
         username = request.POST['username']
         password = request.POST['password']
-        user = judge(username, password)
-        if user.keystroke_set.count() < 15:
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise Exception("username and password doesn't match")
+        if user.keystroke_set.count() < settings.HMM_TRAIN_TIMES:
             return render(request, 'authenticate/train.html', {"user": user, "count": 15-user.keystroke_set.count()})
-    except User.DoesNotExist as e:
-        return render(request, 'authenticate/login.html', {"error_message": "username doesn't exist"})
     except Exception as e:
         return render(request, 'authenticate/login.html', {"error_message": e})
     else:
@@ -102,17 +110,18 @@ def keystroke2timevector(data):
     password = data['password']
 
     response = {}
-    try:
-        user = judge(username, password)
-    except Exception as e:
-        response["error_message"] = str(e)
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        response["error_message"] = "username and password doesn't match"
         return response
 
-    if user.keystroke_set.count() < 15:
-        response['train_message'] = "your keystroke data base is not enough, please input for at least 15 times"
+    if user.keystroke_set.count() < settings.HMM_TRAIN_TIMES:
+        response['train_message'] = "your keystroke data base is not enough, please input for at least %s times" %\
+                                    settings.HMM_TRAIN_TIMES
         return response
+
     keystroke, time_vector = generate_keystroke(mp)
-
     if user.keystroke_set.count() != 0 and\
             user.keystroke_set.filter(keystroke=keystroke).count() == 0:
         response['retry_message'] = "keystroke length is different with existed keystroke, please retry password"
@@ -131,13 +140,7 @@ def keystroke2timevector(data):
         return response
     except Exception as e:
         response['error_message'] = str(e)
-        raise e
-        # return response
-
-    # user.keystroke_set.create(keystroke=keystroke, time_vector=time_vector)
-    response['keystroke'] = keystroke
-    response['time_vector'] = time_vector
-    return response
+        return response
 
 
 def success(request, username):

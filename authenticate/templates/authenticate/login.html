@@ -106,7 +106,7 @@
         {% csrf_token %}
         username:<input type="text" name="username" id="username"><br>
         password:<input type="password" name="password" id="password" onkeydown="if(event.which === 13) return false"><br>
-        <input type="submit" value="login" id="login" formaction="{% url 'authenticate:authenticate'%}" formmethod="post"/>
+        <input type="submit" value="login" id="login" formaction="{% url 'authenticate:login_authenticate'%}" formmethod="post"/>
         <input type="submit" value="create account" id="createAccount" formaction="{% url 'authenticate:add_account'%}" formmethod="post"/>
         <!--<button type="submit" id="test">submit keystroke</button> -->
         <button type="button" id="clear">clear password</button>

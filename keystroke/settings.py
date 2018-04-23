@@ -39,9 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webpack_loader',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,6 +74,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'keystroke.wsgi.application'
 
+HMM_TRAIN_TIMES = 5  # debug
+# HMM_TRAIN_TIMES = 15 # no debug
+TEST_FRONTEND = True
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -87,6 +94,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "authenticate.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
