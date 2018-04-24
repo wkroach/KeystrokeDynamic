@@ -1,11 +1,5 @@
-import React, {Component} from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import Dialog from 'material-ui/Dialog';
+import React from 'react';
 import TextField from 'material-ui/TextField';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme'
-import FlatButton from 'material-ui/FlatButton';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {request} from './utils'
 
@@ -16,27 +10,30 @@ const styles = {
   },
 };
 
-export class UsernameInput extends Component{
-    constructor(props, context) {
-        super(props, context);
+export class UsernameInput extends React.Component{
+    constructor(props) {
+        super(props);
         this.state = {
-            value:props.value,
+            value: "",
         }
+        this.handleOnChange = this.handleOnChange.bind(this);
+
     }
 
-    handleOnChange = (event) => {
+    handleOnChange(event){
         this.setState({
             value: event.target.value,
         })
-    }
+    };
 
     render(){
-        const html =
-                   <TextField
-                       floatingLabelText={"用户名"}
-                        value={this.state.value}
-                        onChange={this.handleOnChange}
-                   />;
-        return html;
+        return (
+            <TextField
+                label={"用户名"}
+                placeholder={"用户名"}
+                value={this.state.value}
+                onChange={this.handleOnChange}
+            />
+        );
     }
 }

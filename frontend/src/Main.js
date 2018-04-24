@@ -15,6 +15,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {request} from './utils'
 import {UsernameInput} from "./UsernameInput";
+import {PasswordInput} from "./PasswordInput";
 
 const styles = {
   container: {
@@ -91,12 +92,10 @@ class Main extends Component {
               <TextField/><br></br>
             1-2-3-4-5
           </Dialog>
-          <h1>Material-UI</h1>
-            <h2>example project</h2>
-            <UsernameInput/>
-            <TextField
-                hintText={"input password"}
-            /><br></br>
+          <h1>Easy Keystroke</h1>
+            <h2>by wkroach</h2>
+            <UsernameInput/><br></br>
+            <PasswordInput/><br></br>
           <RaisedButton
             label="Super Secret Password"
             primary={true}
