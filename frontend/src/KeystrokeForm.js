@@ -28,6 +28,33 @@ const theme = createMuiTheme(
 export class KeystrokeForm extends React.Component{
     constructor(props){
         super(props);
+        this.state={
+           value:"",
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.handleClear = this.handleClear.bind(this);
+    }
+
+    handleChange(event){
+        this.setState({
+            value: event.target.value,
+        });
+    }
+
+    handleKeyDown(event){
+        console.log(event.which);
+    }
+
+    handleKeyUp(event){
+        console.log(event.which);
+    }
+
+    handleClear(event){
+        this.setState({
+            value:"",
+        });
     }
 
     render(){
@@ -38,7 +65,11 @@ export class KeystrokeForm extends React.Component{
                         value={""}
                     /><br/>
                     <PasswordInput
-                        value={""}
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        onKeyDown={this.handleKeyDown}
+                        onKeyUp={this.handleKeyUp}
+                        onClear={this.handleClear}
                     />
                     {countTimes}
                 </div>

@@ -20,24 +20,8 @@ const styles = {
 export class PasswordInput extends React.Component{
     constructor(props){
         super(props);
-        this.state={
-            value:"",
-        };
-        this.handleClear = this.handleClear.bind(this);
-        this.handleOnChange = this.handleOnChange.bind(this);
     }
 
-    handleOnChange(event){
-        this.setState({
-            value: event.target.value,
-        });
-    };
-
-    handleClear(event){
-        this.setState({
-            value:"",
-        });
-    };
 
     render(){
         return (
@@ -47,13 +31,15 @@ export class PasswordInput extends React.Component{
                     id="password"
                     type={"password"}
                     style={styles.input}
-                    value={this.state.value}
-                    onChange={this.handleOnChange}
+                    value={this.props.value}
+                    onChange={this.props.onChange}
+                    onKeyDown={this.props.onKeyDown}
+                    onKeyUp={this.props.onKeyUp}
                     endAdornment={
                         <InputAdornment position={"end"}>
                             <IconButton
                                 aria-label={"clear"}
-                                onClick={this.handleClear}
+                                onClick={this.props.onClear}
                             >
                                 <DeleteIcon/>
                             </IconButton>

@@ -45,9 +45,11 @@ export class CreateAccountDialog extends React.Component{
                         注册
                     </DialogTitle>
 
-                    <KeystrokeForm
-                        countTimes={15}
-                    />
+                    <DialogContent>
+                        <KeystrokeForm
+                            countTimes={15}
+                        />
+                    </DialogContent>
 
                     <DialogActions>
                         <Button
