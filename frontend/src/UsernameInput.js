@@ -8,6 +8,9 @@ const styles = {
     textAlign: 'center',
     paddingTop: 200,
   },
+    input:{
+      width:200,
+    }
 };
 
 export class UsernameInput extends React.Component{
@@ -30,7 +33,7 @@ export class UsernameInput extends React.Component{
         return (
             <TextField
                 label={"用户名"}
-                placeholder={"用户名"}
+                style={styles.input}
                 value={this.state.value}
                 onChange={this.handleOnChange}
             />

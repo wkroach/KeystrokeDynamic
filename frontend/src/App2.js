@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 //import injectTapEventPlugin from 'react-tap-event-plugin';
 //import Main from './Main';
-import {UsernameInput} from './UsernameInput'
-import {KeystrokeForm} from "./KeystrokeForm";
+import {LoginForm} from "./LoginForm";
+import {CreateAccountForm} from "./CreateAccountForm";
 
 class App2 extends React.Component {
   render() {
@@ -23,4 +23,7 @@ class App2 extends React.Component {
 //injectTapEventPlugin();
 //ReactDOM.render(<App2/>, document.getElementById('App2'));
 //ReactDOM.render(<Main/>, document.getElementById('App2'));
-ReactDOM.render(<KeystrokeForm/>, document.getElementById('App2'));
+//ReactDOM.render(<KeystrokeForm button1="登陆" button2="注册"/>, document.getElementById('App2'));
+ReactDOM.render(<LoginForm/>, document.getElementById('App2'));
+//ReactDOM.render(<CreateAccountForm/>, document.getElementById('App2'));
+

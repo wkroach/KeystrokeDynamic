@@ -1,6 +1,8 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button'
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
 import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 import {UsernameInput} from "./UsernameInput";
 import {PasswordInput} from "./PasswordInput";
@@ -15,7 +17,13 @@ const styles = {
       margin: 12,
     }
 };
-const theme = createMuiTheme();
+const theme = createMuiTheme(
+    {
+        palette:{
+            type: 'light',
+        }
+    }
+);
 
 export class KeystrokeForm extends React.Component{
     constructor(props){
@@ -23,29 +31,17 @@ export class KeystrokeForm extends React.Component{
     }
 
     render(){
+        const countTimes = this.props.countTimes > 1 ? <Icon>{this.props.countTimes}</Icon> : null;
         return (
-                <MuiThemeProvider theme={theme}>
-                <div style={styles.container}>
+                <div>
                     <UsernameInput
                         value={""}
                     /><br/>
                     <PasswordInput
                         value={""}
-                    /><br/>
-                    <Button
-                        variant={"raised"}
-                        color={"primary"}
-                    >
-                        登陆
-                    </Button>
-                    <Button
-                        variant={"raised"}
-                        color="primary"
-                    >
-                        注册
-                    </Button><br/>
+                    />
+                    {countTimes}
                 </div>
-                </MuiThemeProvider>
         );
     }
 }

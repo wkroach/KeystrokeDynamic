@@ -7,6 +7,16 @@ import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/Menu/MenuItem';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+const styles = {
+  container: {
+    textAlign: 'center',
+    paddingTop: 200,
+  },
+    input:{
+      width:200,
+    }
+};
+
 export class PasswordInput extends React.Component{
     constructor(props){
         super(props);
@@ -31,24 +41,26 @@ export class PasswordInput extends React.Component{
 
     render(){
         return (
-            <Input
-                type={"password"}
-                label={"密码"}
-                placeholder={"密码"}
-                value={this.state.value}
-                onChange={this.handleOnChange}
-                endAdornment={
-                    <InputAdornment position={"end"}>
-                        <IconButton
-                            aria-label={"clear"}
-                            onClick={this.handleClear}
-                        >
-                            <DeleteIcon/>
-                        </IconButton>
-                    </InputAdornment>
-                }
-            />
-
+            <FormControl>
+                <InputLabel htmlFor="password">密码</InputLabel>
+                <Input
+                    id="password"
+                    type={"password"}
+                    style={styles.input}
+                    value={this.state.value}
+                    onChange={this.handleOnChange}
+                    endAdornment={
+                        <InputAdornment position={"end"}>
+                            <IconButton
+                                aria-label={"clear"}
+                                onClick={this.handleClear}
+                            >
+                                <DeleteIcon/>
+                            </IconButton>
+                        </InputAdornment>
+                    }
+                />
+            </FormControl>
         );
     }
 }
