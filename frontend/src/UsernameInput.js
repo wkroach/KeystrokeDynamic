@@ -16,26 +16,15 @@ const styles = {
 export class UsernameInput extends React.Component{
     constructor(props) {
         super(props);
-        this.state = {
-            value: "",
-        }
-        this.handleOnChange = this.handleOnChange.bind(this);
-
     }
-
-    handleOnChange(event){
-        this.setState({
-            value: event.target.value,
-        })
-    };
 
     render(){
         return (
             <TextField
                 label={"用户名"}
                 style={styles.input}
-                value={this.state.value}
-                onChange={this.handleOnChange}
+                value={this.props.value}
+                onChange={this.props.onChange}
             />
         );
     }

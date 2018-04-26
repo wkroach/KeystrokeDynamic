@@ -28,9 +28,17 @@ export class LoginForm extends React.Component{
         super(props);
         this.state={
             open:false,
+            send:false,
         };
+        this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
+    }
+
+    handleClick(){
+        this.setState((prevState) => {
+                return {send: !prevState.send};
+            });
     }
 
     handleOpen(){
@@ -45,6 +53,13 @@ export class LoginForm extends React.Component{
         });
     }
 
+    ajax(username, password, keystroke){
+        let url = "http://127.0.0.1:8000/authenticate/test_frontend_login/";
+        var options = {body: JSON.stringify({username: username, password: password, keystroke: keystroke})};
+        let f = (json)=>{console.log(json);};
+        request(url, options,f,f,f,f);
+    }
+
     render(){
         return (
             <div style={styles.container}>
@@ -52,11 +67,14 @@ export class LoginForm extends React.Component{
                     <h2> by wkroach</h2>
                 <KeystrokeForm
                     countTimes={1}
+                    onSend={this.state.send}
+                    ajax={this.ajax}
                 />
                 <Button
                         variant={"raised"}
                         color={"primary"}
                         style={styles.button}
+                        onClick={this.handleClick}
                     >
                     登陆
                 </Button>

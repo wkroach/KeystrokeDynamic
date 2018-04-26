@@ -3,6 +3,7 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button'
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
+import Done from '@material-ui/icons/Done'
 import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 import {UsernameInput} from "./UsernameInput";
 import {PasswordInput} from "./PasswordInput";
@@ -29,44 +30,106 @@ export class KeystrokeForm extends React.Component{
     constructor(props){
         super(props);
         this.state={
-           value:"",
+            usernameValue:"",
+            passwordValue:"",
+            keystroke:{},
+            keystrokeArray:[],
+            inputTimes:0,
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.handleAddKeystroke = this.handleAddKeystroke.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.handleClear = this.handleClear.bind(this);
     }
 
-    handleChange(event){
+    handleAddKeystroke(){
+        if(this.state.inputTimes < this.props.countTimes) {
+            console.log(this.state.keystrokeArray);
+            this.setState((prevState) => {
+                const keystrokeTmp = this.state.keystroke;
+                return {
+                    keystrokeArray: prevState.keystrokeArray.concat([keystrokeTmp]),
+                    inputTimes: prevState.inputTimes + 1,
+                };
+            });
+        }
+        this.handleClear();
+    }
+
+    handlePasswordChange(event){
         this.setState({
-            value: event.target.value,
+            passwordValue: event.target.value,
+        });
+    }
+
+    handleUsernameChange(event){
+        this.setState({
+            usernameValue: event.target.value,
         });
     }
 
     handleKeyDown(event){
-        console.log(event.which);
+        const key = String(event.which);
+        const time = new Date().getTime();
+        this.setState((prevState) => {
+            if (prevState.keystroke[key] == null) {
+                prevState.keystroke[key] = new Array();
+                prevState.keystroke[key].push({"time": time, "type": "d"})
+            } else {
+                if (prevState.keystroke[key][prevState.keystroke[key].length - 1].type !== "d") {
+                    prevState.keystroke[key].push({"time": time, "type": "d"});
+                }
+            }
+            return {keystroke:prevState.keystroke};
+        });
     }
 
     handleKeyUp(event){
-        console.log(event.which);
+        const key = String(event.which);
+        const time = new Date().getTime();
+        this.setState((prevState) => {
+            prevState.keystroke[key].push({"time": time, "type": "u"});
+            return {keystroke: prevState.keystroke};
+        });
     }
 
     handleClear(event){
         this.setState({
-            value:"",
+            passwordValue:"",
+            keystroke:{},
         });
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.onSend !== this.props.onSend){
+            if(this.state.usernameValue === "" || this.state.passwordValue === ""){
+                alert("请输入用户名和密码")
+            }else {
+                this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystroke);
+            }
+        }
+    }
+
     render(){
-        const countTimes = this.props.countTimes > 1 ? <Icon>{this.props.countTimes}</Icon> : null;
+        const countTimes = this.props.countTimes > 1
+                            ?
+                                <IconButton
+                                    onClick={this.handleAddKeystroke}
+                                >
+                                    {this.state.inputTimes < this.props.countTimes ? this.state.inputTimes : <Done/>}
+                                </IconButton>
+                            : null;
         return (
                 <div>
                     <UsernameInput
-                        value={""}
+                        value={this.state.usernameValue}
+                        onChange={this.handleUsernameChange}
                     /><br/>
                     <PasswordInput
-                        value={this.state.value}
-                        onChange={this.handleChange}
+                        value={this.state.passwordValue}
+                        onChange={this.handlePasswordChange}
                         onKeyDown={this.handleKeyDown}
                         onKeyUp={this.handleKeyUp}
                         onClear={this.handleClear}

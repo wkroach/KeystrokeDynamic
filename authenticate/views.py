@@ -30,8 +30,12 @@ def test_user(request, user_name):
 
 @csrf_exempt
 def test_frontend_login(request):
+    print(request.body)
     data = json.loads(request.body)
-    return JsonResponse(data)
+    mp = data['keystroke']
+    keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+    ans = {"keystroke_str": keystroke_str, "time_vector_str":time_vector_str};
+    return JsonResponse(ans)
 
 
 @csrf_exempt

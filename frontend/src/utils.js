@@ -6,7 +6,6 @@ export  function request(url, options, success, error400, error, failure) {
     headers.append("Accept", "application/json");
     options["headers"] = headers;
     options["method"] = "POST";
-    options["body"] = JSON.stringify({username:"testUser4", password:"12345"});
     fetch(url, options)
         .then(res => {
             console.log(res.status);
