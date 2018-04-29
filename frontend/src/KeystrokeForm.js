@@ -32,6 +32,8 @@ export class KeystrokeForm extends React.Component{
         this.state={
             usernameValue:"",
             passwordValue:"",
+            keystrokeKeyboardSequenceArray:[],
+            keystrokeKeyboardSequence:"",
             keystroke:{},
             keystrokeArray:[],
             inputTimes:0,
@@ -46,12 +48,19 @@ export class KeystrokeForm extends React.Component{
 
     handleAddKeystroke(){
         if(this.state.inputTimes < this.props.countTimes) {
-            console.log(this.state.keystrokeArray);
             this.setState((prevState) => {
+                console.log(this.state.keystrokeKeyboardSequenceArray);
                 const keystrokeTmp = this.state.keystroke;
+                var len = prevState.keystrokeKeyboardSequenceArray.length;
+                if(len !== 0
+                    && this.state.keystrokeKeyboardSequence !== this.state.keystrokeKeyboardSequenceArray[len-1]){
+                    alert("击键特征与已有击键特征冲突，请重新输入");
+                    return {};
+                }
                 return {
                     keystrokeArray: prevState.keystrokeArray.concat([keystrokeTmp]),
                     inputTimes: prevState.inputTimes + 1,
+                    keystrokeKeyboardSequenceArray: prevState.keystrokeKeyboardSequenceArray.concat([this.state.keystrokeKeyboardSequence]),
                 };
             });
         }
@@ -77,12 +86,14 @@ export class KeystrokeForm extends React.Component{
             if (prevState.keystroke[key] == null) {
                 prevState.keystroke[key] = new Array();
                 prevState.keystroke[key].push({"time": time, "type": "d"})
+                prevState.keystrokeKeyboardSequence += key;
             } else {
                 if (prevState.keystroke[key][prevState.keystroke[key].length - 1].type !== "d") {
                     prevState.keystroke[key].push({"time": time, "type": "d"});
+                    prevState.keystrokeKeyboardSequence += key;
                 }
             }
-            return {keystroke:prevState.keystroke};
+            return {keystroke:prevState.keystroke, keystrokeKeyboardSequence:prevState.keystrokeKeyboardSequence};
         });
     }
 
@@ -99,6 +110,7 @@ export class KeystrokeForm extends React.Component{
         this.setState({
             passwordValue:"",
             keystroke:{},
+            keystrokeKeyboardSequence:""
         });
     }
 
@@ -106,8 +118,14 @@ export class KeystrokeForm extends React.Component{
         if(prevProps.onSend !== this.props.onSend){
             if(this.state.usernameValue === "" || this.state.passwordValue === ""){
                 alert("请输入用户名和密码")
-            }else {
+            }else if(this.props.type === "login"){
                 this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystroke);
+            }else if(this.props.type === "CreateAccount"){
+                if(this.props.countTimes - this.state.inputTimes > 0) {
+                    alert("请再输入至少" + this.props.countTimes - this.state.inputTimes + "次密码");
+                }else{
+                    this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystrokeArray);
+                }
             }
         }
     }
@@ -118,7 +136,7 @@ export class KeystrokeForm extends React.Component{
                                 <IconButton
                                     onClick={this.handleAddKeystroke}
                                 >
-                                    {this.state.inputTimes < this.props.countTimes ? this.state.inputTimes : <Done/>}
+                                    {this.state.inputTimes < this.props.countTimes ? this.props.countTimes-this.state.inputTimes : <Done/>}
                                 </IconButton>
                             : null;
         return (

@@ -30,18 +30,79 @@ def test_user(request, user_name):
 
 @csrf_exempt
 def test_frontend_login(request):
-    print(request.body)
+    # print(request.body)
     data = json.loads(request.body)
     mp = data['keystroke']
     keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
-    ans = {"keystroke_str": keystroke_str, "time_vector_str":time_vector_str};
+    ans = {"keystroke_str": keystroke_str, "time_vector_str":time_vector_str}
     return JsonResponse(ans)
+
+
+@csrf_exempt
+def react_login(request):
+    data = json.loads(request.body)
+    username = data['username']
+    password = data['password']
+    mp = data['keystroke']
+    response = {}
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        response['message'] = "用户名与密码不匹配"
+        return JsonResponse(response, status=404)
+
+    try:
+        keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+        # debug
+        model = HmmAlgorithm()
+        ans = model.predict(user, time_vector_str)
+        if ans:
+            response['message'] = "登陆成功"
+            return JsonResponse(response)
+        else:
+            response['message'] = "登陆失败，击键特征不符"
+            return JsonResponse(response, status=403)
+    except Exception as e:
+        response['message'] = "服务器错误 " + str(e)
+        return JsonResponse(response, status=500)
 
 
 @csrf_exempt
 def test_frontend_add_account(request):
     data = json.loads(request.body)
-    return JsonResponse(data)
+    print(data)
+    mp_arr = data['keystrokeArray']
+    ans = []
+    for mp in mp_arr:
+        keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+        ans.append({"keystroke_str": keystroke_str, "time_vector_str":time_vector_str})
+    return JsonResponse(ans, safe=False)
+
+
+@csrf_exempt
+def react_add_account(request):
+    data = json.loads(request.body)
+    username = data['username']
+    password = data['password']
+    mp_arr = data['keystrokeArray']
+    response = {}
+
+    try:
+        user = User.objects.create_user(username=username, password=password)
+    except Exception as e:
+        response['message'] = str(e)
+        return JsonResponse(response, safe=False, status=404)
+
+    try:
+        for mp in mp_arr:
+            keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+            user.keystroke_set.create(keystroke=keystroke_str, time_vector=time_vector_str)
+        response['message'] = '注册成功'
+        return JsonResponse(response)
+    except Exception as e:
+        response['message'] = e
+        return JsonResponse(response, status=500)
+
 
 
 @csrf_exempt

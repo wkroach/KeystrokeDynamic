@@ -30,12 +30,12 @@ export class LoginForm extends React.Component{
             open:false,
             send:false,
         };
-        this.handleClick = this.handleClick.bind(this);
+        this.handleLogin = this.handleLogin.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
     }
 
-    handleClick(){
+    handleLogin(){
         this.setState((prevState) => {
                 return {send: !prevState.send};
             });
@@ -54,10 +54,13 @@ export class LoginForm extends React.Component{
     }
 
     ajax(username, password, keystroke){
-        let url = "http://127.0.0.1:8000/authenticate/test_frontend_login/";
-        var options = {body: JSON.stringify({username: username, password: password, keystroke: keystroke})};
-        let f = (json)=>{console.log(json);};
-        request(url, options,f,f,f,f);
+        let url = "http://127.0.0.1:8000/authenticate/react_login/";
+        let options = {body: JSON.stringify({username: username, password: password, keystroke: keystroke})};
+        let successFun = (json)=>{alert("登陆成功");};
+        let error404Fun = (json)=>{alert("登陆失败, 用户名与密码不匹配"); console.log(json)};
+        let errorFun = (json)=>{alert("登录失败，击键特征不符"); console.log(json)};
+        let otherFun = (json)=>{alert("未知错误"); console.log(json)};
+        request(url, options,successFun,error404Fun,errorFun,otherFun);
     }
 
     render(){
@@ -68,14 +71,15 @@ export class LoginForm extends React.Component{
                 <KeystrokeForm
                     countTimes={1}
                     onSend={this.state.send}
+                    type={"login"}
                     ajax={this.ajax}
                 />
                 <Button
                         variant={"raised"}
                         color={"primary"}
                         style={styles.button}
-                        onClick={this.handleClick}
-                    >
+                        onClick={this.handleLogin}
+                >
                     登陆
                 </Button>
                 <Button

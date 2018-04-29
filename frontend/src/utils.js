@@ -1,6 +1,6 @@
 import fetch from "isomorphic-fetch"
 
-export  function request(url, options, success, error400, error, failure) {
+export  function request(url, options, success, error404, error, failure) {
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Accept", "application/json");
@@ -12,9 +12,9 @@ export  function request(url, options, success, error400, error, failure) {
         if (res.status >= 200 && res.status < 300) {
             // for anything in 200-299 we expect our API to return a JSON response
             res.json().then(json => { success(json) })
-        } else if (res.status === 400) {
+        } else if (res.status === 404) {
             // even for 400 we expect a JSON response with form errors
-            res.json().then(json => { error400(json) })
+            res.json().then(json => { error404(json) })
         } else {
             // For all other errors we are not sure if the response is JSON,
             // so we just want to display a generic error modal

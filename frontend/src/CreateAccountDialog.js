@@ -9,7 +9,6 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog';
 import {KeystrokeForm} from "./KeystrokeForm";
-import {CreateAccountForm} from "./CreateAccountForm";
 import {request} from "./utils";
 
 const styles = {
@@ -32,6 +31,25 @@ const theme = createMuiTheme(
 export class CreateAccountDialog extends React.Component{
     constructor(props){
         super(props);
+        this.state={
+            send:false,
+        }
+        this.handleCreateAccount = this.handleCreateAccount.bind(this);
+    }
+
+    handleCreateAccount(){
+        this.setState((prevState)=>{
+            return {send: !prevState.send};
+        });
+    }
+
+    ajax(username, password, keystrokeArray){
+        let url = "http://127.0.0.1:8000/authenticate/react_add_account/";
+        let options = {body: JSON.stringify({username: username, password: password, keystrokeArray: keystrokeArray})};
+        let successFun = (json)=>{alert("注册成功");console.log(json)};
+        let error404Fun = (json)=>{alert("注册失败, 用户名已被使用"); console.log(json)};
+        let otherFun = (json)=>{alert("未知错误"); console.log(json)};
+        request(url, options,successFun,error404Fun,otherFun,otherFun);
     }
 
     render(){
@@ -48,12 +66,16 @@ export class CreateAccountDialog extends React.Component{
                     <DialogContent>
                         <KeystrokeForm
                             countTimes={15}
+                            onSend={this.state.send}
+                            type={"CreateAccount"}
+                            ajax={this.ajax}
                         />
                     </DialogContent>
 
                     <DialogActions>
                         <Button
                            color={"primary"}
+                           onClick={this.handleCreateAccount}
                         >
                            确定
                         </Button>

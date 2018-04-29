@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 //import injectTapEventPlugin from 'react-tap-event-plugin';
 //import Main from './Main';
 import {LoginForm} from "./LoginForm";
-import {CreateAccountForm} from "./CreateAccountForm";
 
 class App2 extends React.Component {
   render() {

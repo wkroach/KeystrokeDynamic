@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'webpack_loader',
     'corsheaders',
 ]
@@ -74,8 +75,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'keystroke.wsgi.application'
 
-HMM_TRAIN_TIMES = 5  # debug
-# HMM_TRAIN_TIMES = 15 # no debug
+# HMM_TRAIN_TIMES = 5  # debug
+HMM_TRAIN_TIMES = 15 # no debug
 TEST_FRONTEND = True
 
 CORS_ORIGIN_ALLOW_ALL = True
