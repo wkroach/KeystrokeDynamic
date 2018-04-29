@@ -1,10 +1,12 @@
 import React from 'react';
+import { browserHistory, hashHistory } from 'react-router'
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button'
 import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 import {KeystrokeForm} from "./KeystrokeForm";
 import {CreateAccountDialog} from "./CreateAccountDialog";
 import {request} from "./utils";
+
 
 const styles = {
   container: {
@@ -24,8 +26,8 @@ const theme = createMuiTheme(
 );
 
 export class LoginForm extends React.Component{
-    constructor(props){
-        super(props);
+    constructor(props, context){
+        super(props, context);
         this.state={
             open:false,
             send:false,
@@ -56,9 +58,16 @@ export class LoginForm extends React.Component{
     ajax(username, password, keystroke){
         let url = "http://127.0.0.1:8000/authenticate/react_login/";
         let options = {body: JSON.stringify({username: username, password: password, keystroke: keystroke})};
-        let successFun = (json)=>{alert("登陆成功");};
+        let successFun = (json)=>{
+            alert("登陆成功");
+            const path = '/success';
+            hashHistory.push(path);
+        };
         let error404Fun = (json)=>{alert("登陆失败, 用户名与密码不匹配"); console.log(json)};
-        let errorFun = (json)=>{alert("登录失败，击键特征不符"); console.log(json)};
+        let errorFun = (json)=>{
+            alert("登录失败，击键特征不符");
+            console.log(json);
+        };
         let otherFun = (json)=>{alert("未知错误"); console.log(json)};
         request(url, options,successFun,error404Fun,errorFun,otherFun);
     }

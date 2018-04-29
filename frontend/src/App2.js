@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import injectTapEventPlugin from 'react-tap-event-plugin';
-//import Main from './Main';
+import {Router, Route, browserHistory, hashHistory} from 'react-router'
 import {LoginForm} from "./LoginForm";
+import {Success} from "./Success";
 
 class App2 extends React.Component {
   render() {
@@ -19,10 +19,18 @@ class App2 extends React.Component {
   }
 }
 
-//injectTapEventPlugin();
+ReactDOM.render((
+    <Router history={hashHistory}>
+        <Route path="/" component={App2}/>
+        <Route path="/login" component={LoginForm}/>
+        <Route path="/success" component={Success}/>
+    </Router>
+), document.getElementById('App2'));
+
 //ReactDOM.render(<App2/>, document.getElementById('App2'));
 //ReactDOM.render(<Main/>, document.getElementById('App2'));
 //ReactDOM.render(<KeystrokeForm button1="登陆" button2="注册"/>, document.getElementById('App2'));
-ReactDOM.render(<LoginForm/>, document.getElementById('App2'));
-//ReactDOM.render(<CreateAccountForm/>, document.getElementById('App2'));
+//ReactDOM.render(<LoginForm/>, document.getElementById('App2'));
+//ReactDOM.render(<Success/>, document.getElementById('App2'));
+
 

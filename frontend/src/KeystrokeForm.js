@@ -49,6 +49,7 @@ export class KeystrokeForm extends React.Component{
     handleAddKeystroke(){
         if(this.state.inputTimes < this.props.countTimes) {
             this.setState((prevState) => {
+                console.log(this.state.keystrokeKeyboardSequence);
                 console.log(this.state.keystrokeKeyboardSequenceArray);
                 const keystrokeTmp = this.state.keystroke;
                 var len = prevState.keystrokeKeyboardSequenceArray.length;
@@ -101,8 +102,11 @@ export class KeystrokeForm extends React.Component{
         const key = String(event.which);
         const time = new Date().getTime();
         this.setState((prevState) => {
-            prevState.keystroke[key].push({"time": time, "type": "u"});
-            return {keystroke: prevState.keystroke};
+            if(prevState.keystroke[key] != null
+                && prevState.keystroke[key][prevState.keystroke[key].length - 1].type !== "u"){
+                prevState.keystroke[key].push({"time": time, "type": "u"});
+                return {keystroke: prevState.keystroke};
+            }
         });
     }
 
