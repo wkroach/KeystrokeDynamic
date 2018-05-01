@@ -16,6 +16,7 @@ urlpatterns = [
     path('get_keystroke/', views.get_keystroke, name="get_keystroke"),
     path('train_keystroke/', views.train_keystroke, name='train_keystroke'),
     # react frontend
+    path('test_is_login/', views.test_is_login, name="test_is_login"),
     path('test_frontend_login/', views.test_frontend_login, name="test_frontend_login"),
     path('test_frontend_add_account/', views.test_frontend_add_account, name="test_frontend_add_account"),
     path('react_login/', views.react_login, name="react_login"),

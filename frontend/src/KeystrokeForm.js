@@ -120,13 +120,17 @@ export class KeystrokeForm extends React.Component{
 
     componentDidUpdate(prevProps, prevState){
         if(prevProps.onSend !== this.props.onSend){
-            if(this.state.usernameValue === "" || this.state.passwordValue === ""){
-                alert("请输入用户名和密码")
-            }else if(this.props.type === "login"){
-                this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystroke);
+            if(this.props.type === "login"){
+                if(this.state.usernameValue === "" || this.state.passwordValue === ""){
+                    alert("请输入用户名和密码");     
+                }else{
+                    this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystroke);     
+                }
             }else if(this.props.type === "CreateAccount"){
                 if(this.props.countTimes - this.state.inputTimes > 0) {
-                    alert("请再输入至少" + this.props.countTimes - this.state.inputTimes + "次密码");
+                    console.log(this.props.countTimes);
+                    console.log(this.state.inputTimes);
+                    alert("请再输入至少" + (this.props.countTimes - this.state.inputTimes) + "次密码");
                 }else{
                     this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystrokeArray);
                 }

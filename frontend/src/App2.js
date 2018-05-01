@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Router, Route, browserHistory, hashHistory} from 'react-router'
-import {LoginForm} from "./LoginForm";
+import {LoginForm, checkLogin} from "./LoginForm";
 import {Success} from "./Success";
 
 class App2 extends React.Component {
@@ -23,7 +23,7 @@ ReactDOM.render((
     <Router history={hashHistory}>
         <Route path="/" component={App2}/>
         <Route path="/login" component={LoginForm}/>
-        <Route path="/success" component={Success}/>
+        <Route path="/success" component={Success} onEnter={checkLogin}/>
     </Router>
 ), document.getElementById('App2'));
 

@@ -25,6 +25,22 @@ const theme = createMuiTheme(
     }
 );
 
+export function checkLogin(){
+    let url = "http://127.0.0.1:8000/authenticate/test_frontend_login/";
+        //let options = {body: JSON.stringify({username: username, password: password, keystroke: keystroke})};
+    let options = {};
+    let successFun = (json)=>{
+        alert("登陆成功");
+    };
+    let error = (json)=>{
+        alert("登陆失败");
+        console.log(json);
+        const path = "/login";
+        hashHistory.push(path);
+    };
+    //request(url, options,successFun, error, error, error);
+}
+
 export class LoginForm extends React.Component{
     constructor(props, context){
         super(props, context);

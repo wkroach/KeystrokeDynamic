@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate
+import django.contrib.auth as auth
 from .models import User
 from .data_center import *
 from .algorithm import *
@@ -27,15 +28,30 @@ def test_user(request, user_name):
     user = get_object_or_404(User, username=user_name)
     return render(request, 'authenticate/user.html', {'user':user})
 
+@csrf_exempt
+def test_is_login(request):
+    response = {}
+    if request.user.is_authenticated:
+        return JsonResponse(response)
+    else:
+        return JsonResponse(response, status=402)
+
 
 @csrf_exempt
 def test_frontend_login(request):
     # print(request.body)
     data = json.loads(request.body)
-    mp = data['keystroke']
-    keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
-    ans = {"keystroke_str": keystroke_str, "time_vector_str":time_vector_str}
-    return JsonResponse(ans)
+    username = data['username']
+    password = data['password']
+    user = authenticate(username=username, password=password)
+    if user is not None and user.is_active:
+        auth.login(request, user)
+        mp = data['keystroke']
+        keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+        ans = {"keystroke_str": keystroke_str, "time_vector_str":time_vector_str}
+        return JsonResponse(ans)
+    else:
+        return JsonResponse({"message": "error"}, status=404)
 
 
 @csrf_exempt
