@@ -105,9 +105,11 @@ class HmmAlgorithm(Algorithm):
         try:
             self.__clf = EllipticEnvelope()
             self.__clf.fit(score_vectors)
+            print("Elli")
         except Exception as e:
             self.__clf = svm.OneClassSVM(nu=0.1, kernel="rbf")
             self.__clf.fit(score_vectors)
+            print("svm")
         finally:
             # debug
             print(self.__clf.predict(score_vectors))

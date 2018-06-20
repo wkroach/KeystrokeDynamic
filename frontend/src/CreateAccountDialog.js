@@ -44,9 +44,20 @@ export class CreateAccountDialog extends React.Component{
     }
 
     ajax(username, password, keystrokeArray){
-        let url = "http://127.0.0.1:8000/authenticate/react_add_account/";
+        //real
+        // let url = "http://127.0.0.1:8000/authenticate/react_add_account/";
+        //test
+        let url = "http://127.0.0.1:8000/authenticate/test_frontend_add_account/";
         let options = {body: JSON.stringify({username: username, password: password, keystrokeArray: keystrokeArray})};
-        let successFun = (json)=>{alert("注册成功");console.log(json)};
+        let successFun = (json)=>{
+                alert("注册成功");
+                let str = "击键按键顺序: " + json[0]['keystroke_str'] + "\n";
+                for(let i = 0; i < json.length;++i) {
+                    str += "击键时间特征向量: " + json[i]['time_vector_str']+"\n";
+                }
+                alert(str);
+                console.log(json)
+        };
         let error404Fun = (json)=>{alert("注册失败, 用户名已被使用"); console.log(json)};
         let otherFun = (json)=>{alert("未知错误"); console.log(json)};
         request(url, options,successFun,error404Fun,otherFun,otherFun);
@@ -65,7 +76,7 @@ export class CreateAccountDialog extends React.Component{
 
                     <DialogContent>
                         <KeystrokeForm
-                            countTimes={15}
+                            countTimes={5}
                             onSend={this.state.send}
                             type={"CreateAccount"}
                             ajax={this.ajax}

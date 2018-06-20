@@ -72,10 +72,15 @@ export class LoginForm extends React.Component{
     }
 
     ajax(username, password, keystroke){
+        //real
         let url = "http://127.0.0.1:8000/authenticate/react_login/";
+        //test
+        // let url = "http://127.0.0.1:8000/authenticate/test_frontend_login/";
         let options = {body: JSON.stringify({username: username, password: password, keystroke: keystroke})};
         let successFun = (json)=>{
             alert("登陆成功");
+            //test
+            // alert("击键键位顺序: " + json['keystroke_str'] + "\n击键时间特征向量: " + json['time_vector_str']);
             const path = '/success';
             hashHistory.push(path);
         };

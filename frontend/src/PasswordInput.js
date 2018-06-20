@@ -29,7 +29,7 @@ export class PasswordInput extends React.Component{
                 <InputLabel htmlFor="password">密码</InputLabel>
                 <Input
                     id="password"
-                    type={"password"}
+                    type={"text"}
                     style={styles.input}
                     value={this.props.value}
                     onChange={this.props.onChange}

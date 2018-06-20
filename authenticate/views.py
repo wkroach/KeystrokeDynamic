@@ -69,7 +69,8 @@ def react_login(request):
 
     try:
         keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
-        # debug
+        # test
+        print(time_vector_str)
         model = HmmAlgorithm()
         ans = model.predict(user, time_vector_str)
         if ans:
@@ -106,7 +107,7 @@ def react_add_account(request):
     try:
         user = User.objects.create_user(username=username, password=password)
     except Exception as e:
-        response['message'] = str(e)
+        response['message'] = "用户名已存在"
         return JsonResponse(response, safe=False, status=404)
 
     try:
@@ -116,7 +117,7 @@ def react_add_account(request):
         response['message'] = '注册成功'
         return JsonResponse(response)
     except Exception as e:
-        response['message'] = e
+        response['message'] = "服务器错误"
         return JsonResponse(response, status=500)
 
 
