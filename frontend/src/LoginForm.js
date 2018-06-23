@@ -47,10 +47,12 @@ export class LoginForm extends React.Component{
         this.state={
             open:false,
             send:false,
+            clear:false,
         };
         this.handleLogin = this.handleLogin.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
+        this.handleClearPassword = this.handleClearPassword(this);
     }
 
     handleLogin(){
@@ -71,6 +73,12 @@ export class LoginForm extends React.Component{
         });
     }
 
+    handleClearPassword(){
+        this.setState((prevState) => {
+                return {clear: !prevState.clear};
+            });
+    }
+
     ajax(username, password, keystroke){
         //real
         let url = "http://127.0.0.1:8000/authenticate/react_login/";
@@ -84,12 +92,17 @@ export class LoginForm extends React.Component{
             const path = '/success';
             hashHistory.push(path);
         };
-        let error404Fun = (json)=>{alert("登陆失败, 用户名与密码不匹配"); console.log(json)};
+        let error404Fun = (json)=>{
+            alert("登陆失败, 用户名与密码不匹配");
+            console.log(json)};
         let errorFun = (json)=>{
             alert("登录失败，击键特征不符");
             console.log(json);
         };
-        let otherFun = (json)=>{alert("未知错误"); console.log(json)};
+        let otherFun = (json)=>{
+            alert("未知错误");
+            console.log(json)
+        };
         request(url, options,successFun,error404Fun,errorFun,otherFun);
     }
 

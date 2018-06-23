@@ -45,9 +45,9 @@ export class CreateAccountDialog extends React.Component{
 
     ajax(username, password, keystrokeArray){
         //real
-        // let url = "http://127.0.0.1:8000/authenticate/react_add_account/";
+        let url = "http://127.0.0.1:8000/authenticate/react_add_account/";
         //test
-        let url = "http://127.0.0.1:8000/authenticate/test_frontend_add_account/";
+        //let url = "http://127.0.0.1:8000/authenticate/test_frontend_add_account/";
         let options = {body: JSON.stringify({username: username, password: password, keystrokeArray: keystrokeArray})};
         let successFun = (json)=>{
                 alert("注册成功");

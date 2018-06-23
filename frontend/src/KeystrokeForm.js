@@ -51,8 +51,14 @@ export class KeystrokeForm extends React.Component{
             this.setState((prevState) => {
                 console.log(this.state.keystrokeKeyboardSequence);
                 console.log(this.state.keystrokeKeyboardSequenceArray);
-                const keystrokeTmp = this.state.keystroke;
+                let keystrokeTmp = this.state.keystroke;
                 var len = prevState.keystrokeKeyboardSequenceArray.length;
+
+                if(this.state.keystrokeKeyboardSequence.length === 0){
+                    alert("密码不能为空");
+                    return {};
+                }
+
                 if(len !== 0
                     && this.state.keystrokeKeyboardSequence !== this.state.keystrokeKeyboardSequenceArray[len-1]){
                     alert("击键特征与已有击键特征冲突，请重新输入");
@@ -65,7 +71,7 @@ export class KeystrokeForm extends React.Component{
                 };
             });
         }
-        this.handleClear();
+
     }
 
     handlePasswordChange(event){
@@ -82,6 +88,19 @@ export class KeystrokeForm extends React.Component{
 
     handleKeyDown(event){
         const key = String(event.which);
+        if(key == "12"){
+            return;
+        }
+        if(key === "13"){
+            if(this.props.type == "CreateAccount"){
+                this.handleAddKeystroke();
+                this.handleClear();
+            }
+            else if(this.props.type == "login"){
+                this.sendLoginInfo();
+            }
+           return;
+        }
         const time = new Date().getTime();
         this.setState((prevState) => {
             if (prevState.keystroke[key] == null) {
@@ -118,13 +137,16 @@ export class KeystrokeForm extends React.Component{
         });
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(prevProps.onSend !== this.props.onSend){
-            if(this.props.type === "login"){
+    sendLoginInfo(prevState){
+        if(this.props.type === "login"){
                 if(this.state.usernameValue === "" || this.state.passwordValue === ""){
-                    alert("请输入用户名和密码");     
+                    alert("请输入用户名和密码");
                 }else{
-                    this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystroke);     
+                    let username = this.state.usernameValue;
+                    let password = this.state.passwordValue;
+                    let keystroke = this.state.keystroke;
+                    this.props.ajax(username, password, keystroke);
+                    this.handleClear();
                 }
             }else if(this.props.type === "CreateAccount"){
                 if(this.props.countTimes - this.state.inputTimes > 0) {
@@ -132,10 +154,22 @@ export class KeystrokeForm extends React.Component{
                     console.log(this.state.inputTimes);
                     alert("请再输入至少" + (this.props.countTimes - this.state.inputTimes) + "次密码");
                 }else{
-                    this.props.ajax(this.state.usernameValue, this.state.passwordValue, this.state.keystrokeArray);
+                    this.props.ajax(this.state.usernameValue, prevState.passwordValue, this.state.keystrokeArray);
                 }
             }
+    }
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.onSend !== this.props.onSend){
+           this.sendLoginInfo();
+           return;
         }
+        if(prevState.inputTimes == this.props.countTimes-1 && this.state.inputTimes == this.props.countTimes){
+            this.sendLoginInfo(prevState);
+            return;
+        }
+        //if(prevState.onClear !== this.props.onClear){
+         //   this.handleClear();
+        //}
     }
 
     render(){
@@ -143,8 +177,11 @@ export class KeystrokeForm extends React.Component{
                             ?
                                 <IconButton
                                     onClick={this.handleAddKeystroke}
-                                >
-                                    {this.state.inputTimes < this.props.countTimes ? this.props.countTimes-this.state.inputTimes : <Done/>}
+                                >{
+                                        this.state.inputTimes < this.props.countTimes ?
+                                        this.props.countTimes-this.state.inputTimes :
+                                            <Done/>
+                                }
                                 </IconButton>
                             : null;
         return (
