@@ -25,7 +25,7 @@ SECRET_KEY = 'j!%x17weq3(k_s01hjpl-c1^!7zi&z4%vv3des6ymxl0-+j)jf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*",]
 
 
 # Application definition
@@ -38,9 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'webpack_loader',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -71,6 +75,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'keystroke.wsgi.application'
 
+# HMM_TRAIN_TIMES = 5  # debug
+HMM_TRAIN_TIMES = 15 # no debug
+TEST_FRONTEND = True
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -86,6 +95,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "authenticate.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -124,11 +134,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-#HERE = os.path.dirname(os.path.abspath(__file__))
-#HERE = os.path.join(HERE, '../')
-#STATICFILES_DIRS = (
-#    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-#    # Always use forward slashes, even on Windows.
-#    # Don't forget to use absolute paths, not relative paths.
-#    os.path.join(HERE, 'static/'),
-#)
+# HERE = os.path.dirname(os.path.abspath(__file__))
+# HERE = os.path.join(HERE, '../')
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(BASE_DIR, 'static/'),
+)
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/local/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/webpack-stats-local.json'),
+    }
+}

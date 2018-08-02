@@ -2,12 +2,18 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.contrib.auth import authenticate
+import django.contrib.auth as auth
 from .models import User
 from .data_center import *
 from .algorithm import *
 
 import json
 from .data_center import *
+
+
+def index(request):
+    return render(request, 'authenticate/index.html')
 
 
 def test_list(request):
@@ -22,36 +28,124 @@ def test_user(request, user_name):
     user = get_object_or_404(User, username=user_name)
     return render(request, 'authenticate/user.html', {'user':user})
 
-
-def create_account(request):
-    return render(request, "authenticate/createaccount.html")
-
-
-def add_account(request):
-    try:
-        user = User.objects.get(username=request.POST['username'])
-    except Exception:
-        user = User(username=request.POST['username'], password=request.POST['password'])
-        user.save()
-        # return HttpResponseRedirect(reverse('authenticate:success', args=(user.username,)))
-        return render(request, 'authenticate/train.html', {"user": user, "count": 15})
+@csrf_exempt
+def test_is_login(request):
+    response = {}
+    if request.user.is_authenticated:
+        return JsonResponse(response)
     else:
-        return render(request, 'authenticate/login.html', {"error_message": "username existed"})
+        return JsonResponse(response, status=402)
+
+
+@csrf_exempt
+def test_frontend_login(request):
+    # print(request.body)
+    data = json.loads(request.body)
+    username = data['username']
+    password = data['password']
+    user = authenticate(username=username, password=password)
+    if user is not None and user.is_active:
+        auth.login(request, user)
+        mp = data['keystroke']
+        keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+        ans = {"keystroke_str": keystroke_str, "time_vector_str":time_vector_str}
+        return JsonResponse(ans)
+    else:
+        return JsonResponse({"message": "error"}, status=404)
+
+
+@csrf_exempt
+def react_login(request):
+    data = json.loads(request.body)
+    username = data['username']
+    password = data['password']
+    mp = data['keystroke']
+    response = {}
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        response['message'] = "用户名与密码不匹配"
+        return JsonResponse(response, status=404)
+
+    try:
+        keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+        # test
+        print(time_vector_str)
+        model = HmmAlgorithm()
+        ans = model.predict(user, time_vector_str)
+        if ans:
+            response['message'] = "登陆成功"
+            return JsonResponse(response)
+        else:
+            response['message'] = "登陆失败，击键特征不符"
+            return JsonResponse(response, status=403)
+    except Exception as e:
+        response['message'] = "服务器错误 " + str(e)
+        return JsonResponse(response, status=500)
+
+
+@csrf_exempt
+def test_frontend_add_account(request):
+    data = json.loads(request.body)
+    print(data)
+    mp_arr = data['keystrokeArray']
+    ans = []
+    for mp in mp_arr:
+        keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+        ans.append({"keystroke_str": keystroke_str, "time_vector_str":time_vector_str})
+    return JsonResponse(ans, safe=False)
+
+
+@csrf_exempt
+def react_add_account(request):
+    data = json.loads(request.body)
+    username = data['username']
+    password = data['password']
+    mp_arr = data['keystrokeArray']
+    response = {}
+
+    try:
+        user = User.objects.create_user(username=username, password=password)
+    except Exception as e:
+        response['message'] = "用户名已存在"
+        return JsonResponse(response, safe=False, status=404)
+
+    try:
+        for mp in mp_arr:
+            keystroke_str, time_vector_str = DataCenter.frontend_map_2_keystroke_str_timevector_str(mp)
+            user.keystroke_set.create(keystroke=keystroke_str, time_vector=time_vector_str)
+        response['message'] = '注册成功'
+        return JsonResponse(response)
+    except Exception as e:
+        response['message'] = "服务器错误"
+        return JsonResponse(response, status=500)
+
+
+
+@csrf_exempt
+def add_account(request):
+    username = request.POST["username"]
+    password = request.POST["password"]
+    try:
+        user = User.objects.create_user(username=username, password=password)
+        return render(request, 'authenticate/train.html', {"user": user, "count": settings.HMM_TRAIN_TIMES})
+    except Exception as e:
+        return render(request, 'authenticate/login.html', {"error_message": e})
 
 
 def login(request):
     return render(request, "authenticate/login.html")
 
 
-def authenticate(request):
+def login_authenticate(request):
     try:
         username = request.POST['username']
         password = request.POST['password']
-        user = judge(username, password)
-        if user.keystroke_set.count() < 15:
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise Exception("username and password doesn't match")
+        if user.keystroke_set.count() < settings.HMM_TRAIN_TIMES:
             return render(request, 'authenticate/train.html', {"user": user, "count": 15-user.keystroke_set.count()})
-    except User.DoesNotExist as e:
-        return render(request, 'authenticate/login.html', {"error_message": "username doesn't exist"})
     except Exception as e:
         return render(request, 'authenticate/login.html', {"error_message": e})
     else:
@@ -98,17 +192,18 @@ def keystroke2timevector(data):
     password = data['password']
 
     response = {}
-    try:
-        user = judge(username, password)
-    except Exception as e:
-        response["error_message"] = str(e)
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        response["error_message"] = "username and password doesn't match"
         return response
 
-    if user.keystroke_set.count() < 15:
-        response['train_message'] = "your keystroke data base is not enough, please input for at least 15 times"
+    if user.keystroke_set.count() < settings.HMM_TRAIN_TIMES:
+        response['train_message'] = "your keystroke data base is not enough, please input for at least %s times" %\
+                                    settings.HMM_TRAIN_TIMES
         return response
+
     keystroke, time_vector = generate_keystroke(mp)
-
     if user.keystroke_set.count() != 0 and\
             user.keystroke_set.filter(keystroke=keystroke).count() == 0:
         response['retry_message'] = "keystroke length is different with existed keystroke, please retry password"
@@ -127,13 +222,7 @@ def keystroke2timevector(data):
         return response
     except Exception as e:
         response['error_message'] = str(e)
-        raise e
-        # return response
-
-    # user.keystroke_set.create(keystroke=keystroke, time_vector=time_vector)
-    response['keystroke'] = keystroke
-    response['time_vector'] = time_vector
-    return response
+        return response
 
 
 def success(request, username):
